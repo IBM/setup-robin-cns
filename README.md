@@ -152,7 +152,7 @@ At this point, you will have successfully:
 - created a VPC infrastructure
 - exposed the ports required for Robin
 
-### Step 2: Create Kubernetes or OpenShift clusters on VPC
+### Step 2: Create Kubernetes or OpenShift clusters on IBM Cloud VPC
 Once you have setup the VPC infrastructure, you can now install Kubernetes or OpenShift on your VPC.
 
 #### 2.1: Create Kubernetes cluster
@@ -184,7 +184,7 @@ Once you have setup the VPC infrastructure, you can now install Kubernetes or Op
 
 >NOTE: It will take approximately 30min to provision the OpenShift cluster.
 
-- Once the OpenShift cluster is provisioned, you can connect to the cluster via CLI. Go to [Kubernetes cluster dashboard](https://cloud.ibm.com/kubernetes/clusters) and select the OpenShift cluster that you created. Click on **Access** tab on the left panel under Accessing your cluster, click on the **oauth token request page**. You will be redirected to a different page. On that page click on **Display Token** to get an `oc login` token. Copy paste the command in your terminal and you will be connected to the OpenShift cluster.
+- Once the OpenShift cluster is provisioned, you can connect to the cluster via CLI. Go to [Kubernetes cluster dashboard](https://cloud.ibm.com/kubernetes/clusters) and select the OpenShift cluster that you created. Click on **Actions** tab on the top right, select the **Connect via CLI**. In the opened panel, click on the **oauth token request page**. You will be redirected to a different page. On that page click on **Display Token** to get an `oc login` token. Copy paste the command in your terminal and you will be connected to the OpenShift cluster.
 
 >Example Token: `oc login --token=sha256~xxxx --server=https://xxxx.xx.containers.cloud.ibm.com:30716`
 
@@ -194,9 +194,9 @@ At this point, you will have successfully:
 - created a Kubernetes cluster or OpenShift cluster
 - connected to the cluster from your terminal
 
-### Step 3: Robin Installation on Kubernetes
+### Step 3: Create IBM Cloud API key
+You will need an IBM Cloud API key to install Robin CNS on IBM Cloud based Kubernetes or OpenShift. In this step you will learn how to create an IBM Cloud API Key.
 
-#### 3.1: Create IBM Cloud API key
 - Go to [Manage access users > API keys](https://cloud.ibm.com/iam/apikeys), click on **Create an IBM Cloud API key**. Enter name and description of the api key and click on **Create**.
 ![](doc/source/images/create-apikey.png)
 
@@ -204,7 +204,10 @@ At this point, you will have successfully:
 
 >NOTE: You need to download the API Key to keep it with you and view anytime. Once the dialog box is dismissed in the dashboard, you cannot view the API Key on the dashboard.
 
-#### 3.2: Download Robin CNS installer
+### Step 4: Setup Robin on Kubernetes
+In this section you will learn to download, install, and activate Robin CNS on Kubernetes.
+
+#### 4.1: Download Robin CNS installer
 - Goto [get.robin.io](https://get.robin.io), and enter your email id. Click on **Sign in to Download**.
 ![](doc/source/images/getrobin.png)
 
@@ -220,13 +223,13 @@ At this point, you will have successfully:
 
 - Go to the [Download Robin Cloud Native Storage](https://get.robin.io/download) to download installer.
 ![](doc/source/images/robindownload.png)
-    ##### Download Robin CNS for Kubernetes:
-    - Click on **Download and Install** under the **Deploy on IBM IKS** section to download Robin CNS for Kubernetes
-    ![](doc/source/images/downloadiks.png)
+    
+- Click on **Download and Install** under the **Deploy on IBM IKS** section to download Robin CNS for Kubernetes
+![](doc/source/images/downloadiks.png)
 
-    - A curl and wget command will be displayed, copy and paste the command in your terminal to download the Robin CNS.
+- A curl and wget command will be displayed, copy and paste the command in your terminal to download the Robin CNS.
 
-    >Example Command: 
+>Example Command: 
     >```
     > wget "http://get.robin.io/download/storage?id=<your-id>&type=iks" -O robin-install.tar
     >```
@@ -234,34 +237,20 @@ At this point, you will have successfully:
     > curl -L "http://get.robin.io/download/storage?id=<your-id>&type=iks" -o robin-install.tar
     >```
 
-    ##### Download Robin CNS for OpenShift:
-    - Click on **Download and Install** under the **Deploy on Red Hat OpenShift**  to download Robin CNS for OpenShift
-    ![](doc/source/images/downloados.png)
-
-    - A curl and wget command will be displayed, copy and paste the command in your terminal to download the Robin CNS.
-
-    >Example Command: 
-    >```
-    > wget "http://get.robin.io/download/storage?id=<your-id>&type=openshift-onprem" -O robin-install.tar
-    >```
-    >```
-    > curl -L "http://get.robin.io/download/storage?id=<your-id>&type=openshift-onprem" -o robin-install.tar
-    >```
-
 - Also go to [get.robin.io/activate](https://get.robin.io/activate) and copy the USERID in a notepad as it will be required in subsequent steps.
 ![](doc/source/images/activationcode.png)
 
 >Example: `robin license activate XXXXXXXX` copy the `XXXXXXXX` which is your USERID.
 
-#### 3.3: Install Robin CNS
+#### 4.2: Install Robin CNS
 - Extract the `robin-install.tar` into a directory `robin`, In terminal run the following command:
     ```bash
     $ mkdir -p ./robin && tar -xf robin-install.tar -C ./robin
     ``` 
 
 - Go to the newly created `robin` directory and run the shell script, In terminal run the following command:
-    #### To install on Kubernetes:
-    - Run the following command to get the Robin CNS version number
+    
+    - Get the Robin CNS version number:
         ```bash
         $ cd ./robin
         $ cat robin.yaml | grep robinsys/robinimg
@@ -274,16 +263,8 @@ At this point, you will have successfully:
         ```bash
         $ ./install-robin.sh --version=5.3.4-75
         ```
-    <!--
-    #### To install on OpenShift
-    ```bash
-    $ cd ./robin
 
-    $ ./install-robin.sh -y
-    ```
-    -->
-
-- You will be asked for **IBM api key**, enter the IBM Api Key which you downloaded in step 3.1.
+- You will be asked for **IBM api key**, enter the IBM Api Key which you downloaded in step 3.
     ```
     Validating Kubernetes cluster......Done
     Enter IBM api key: XXXXXXXX
@@ -291,24 +272,31 @@ At this point, you will have successfully:
     Validating robin cluster yaml......Done
     Installing Robin operator...........Done
     Installing Robin cluster............Done
-    Setting up robin client............
+    Setting up robin client............Done
+    Activate robin license............Required
+    *****
+    ***** Your ROBIN License is NOT ACTIVATED...
+    ***** Please register at https://get.robin.io/activate
+    ***** to activate your license and access all ROBIN features.
+    *****
+        $ robin license activate <USERID>
+        Note: You can get your User ID after registering on https://get.robin.io. Above command will only work if the host on which the
+                ROBIN client is running on has an internet connection. If this is not the case please retrieve the license key by using the
+                below link and apply it using the command 'robin license apply <key>'.
+                https://get.robin.io/activate?clusterid=YGVgYGggYWFj.GkhY00fYWBcZ1ccYF8oNF0DQDQ7XEMxPyf1XGFeZlVgYVz5PzU1Qy7xPWjj.XZoclkjXWNcYFwgYWRoJA__
+        For logging into robin cluster,
+        Default username: admin
+        Default password: Robin123
     ```
 
 - It will take about 10-15 min to install Robin CNS on your cluster.
 
-- **NOTE:** The installer may freeze at `Setting up robin client............` for a long time, however the robin cluster will be installed at this point, you can run the subsequent `kubectl describe` or `oc describe` command to verify the status of all the pods as **running** indicating successful installation of Robin CNS.
+- **NOTE:** If the installation freezes at `Setting up robin client............` for a long time, you can run the `kubectl describe` or `oc describe` command given in the next point to verify the status of all the pods. If the status is **running**, Robin CNS has been installed successfully.
 
 - In new Terminal, run the following command to verify `running` status of the robin pods.
-    ##### On Kubernetes:
     ```bash
     $ kubectl get pods -n robinio
     ```
-    <!--
-    ##### On OpenShift:
-    ```bash
-    $ oc get pods -n robinio
-    ```
-    -->
     ```
     NAME                                     READY   STATUS    RESTARTS   AGE
     csi-attacher-robin-5b4f68d79b-j4g54      3/3     Running   0          23d
@@ -327,16 +315,9 @@ At this point, you will have successfully:
 - You will see all the pods up and running, which confirms the Robin CNS has been installed successfully.
 
 - Also run the `describe` command to verify `Ready` status of the `Phase` field to confirm that Robin CNS has been installed successfully.
-    ##### On Kubernetes:
     ```bash
     $ kubectl describe robincluster -n robinio
     ```
-    <!--
-    ##### On OpenShift:
-    ```bash
-    $ oc describe robincluster -n robinio
-    ```
-    -->
     ```
     Name:         robin
     Namespace:    robinio
@@ -358,13 +339,8 @@ At this point, you will have successfully:
     ...
     
     ```
-### Step 4: Robin Installation on OpenShift through Red Hat Marketplace
 
->Work in progress.
-
-### Step 5: Access & activate Robin client
-
-#### 5.1: Access Robin client
+#### 4.3: Access Robin client
 - In terminal, run the following command to get the connection command:
     ```bash
     $ kubectl describe robincluster -n robinio | grep "kubectl exec"
@@ -383,7 +359,7 @@ At this point, you will have successfully:
     [robinds@kube-c1ima1bd0o105lencd5g-robiniooscl-default-0000029e ~]#
     ```
 
-#### 5.2: Activate Robin client
+#### 4.4: Activate Robin client
 - In terminal, under the robin prompt, run the `robin login` command with default username as `admin` and password as `Robin123`:
     ```
     [robinds@kube-c1ima1bd0o105lencd5g-robiniooscl-default-0000029e ~]# robin login admin
@@ -401,6 +377,91 @@ At this point, you will have successfully:
     ```
 
 - At this point, you will have successfully logged into robin client and activated it.
+
+### Step 5: Setup Robin on OpenShift through Red Hat Marketplace
+In this section you will learn to install Robin CNS operator on your openshift cluster from Red Hat Marketplace.
+
+- In terminal, run the following command to create a `robinio` namespace in OpenShift and initialize it with IBM Cloud API key secret.
+    ```
+    $ oc new-project robinio
+    ```
+
+- Add the IBM Cloud API key copied in step 3 to the `robinio` namespace. In terminal run the following command.
+    ```
+    $ oc create secret generic cloud-cred-secret --from-literal=api_key=<API KEY> -n robinio
+    ```
+
+- Once the namespace is created and the IBM Cloud API key secret is in place, you can proceed with installing the operator from OpenShift.
+
+- Follow the tutorial to [Register your OpenShift cluster on Red Hat Marketplace](https://developer.ibm.com/tutorials/configure-a-red-hat-openshift-cluster-with-red-hat-marketplace/) before you start.
+
+- Once the cluster is registered on RHM, make sure to **Replace** the worker nodes of your OpenShift cluster by going to [Kubernetes cluster dashboard](https://cloud.ibm.com/kubernetes/clusters) and select the OpenShift cluster that you created. On the left panel select **Worker nodes**. Select all the nodes and click on **Replace**. This will take about an hour to replace the nodes.
+![](doc/source/images/replacenodes.png)
+
+>Note: This replace step is required only for IBM Cloud managed OpenShift cluster, this step may be skipped for AWS or GCP managed OpenShift cluster.
+
+- After the OpenShift cluster is back online, goto the [Red Hat Marketplace](https://marketplace.redhat.com/en-us) and search for **Robin**.
+
+- Select the [Robin Cloud Native Storage](https://marketplace.redhat.com/en-us/products/robin-storage).
+
+- The Robin Cloud Native Storage product page gives you an overview, documentation, and pricing options associated with the product. Select the **Free Trial** button.
+![](doc/source/images/robincnsproductpage.png)
+
+- Next, the purchase summary will show the Subscription term, with a total cost of $0.00. Click **Start trial**.
+![](doc/source/images/starttrial.png)
+
+- Visit [Workspace > Software](https://marketplace.redhat.com/en-us/workspace/software) to view your list of purchased software.
+
+- Select Robin Cloud Native Storage and then click the **Operators tab**. Select the **Install operator** button. Leave the default selection for Update channel and Approval strategy. Select the cluster and namespace scope as `robinio` for the operator and click **Install**.
+![](doc/source/images/robininstallation2.png)
+
+- You can check the progress of the installation on your OpenShift cluster. Go to [Kubernetes cluster dashboard](https://cloud.ibm.com/kubernetes/clusters) and select the OpenShift cluster that you created. Click on **OpenShift web console** to launch the OpenShift console.
+
+- Under **Operators** in the left panel, select **Installed Operators**. Make sure you are in the  project `robinio` to view the status of the Robin CNS installation.
+![](doc/source/images/installedoperators.png)
+
+- Once the status is **Succeeded**, click on the operator name to open the operator page. Under **Details** > **Provided APIs**, click on the **Create Instance** to create a Robin Cluster.
+![](doc/source/images/createrobincluster.png)
+
+- In the Create RobinCluster page, select the **YAML View**.
+![](doc/source/images/selectyaml.png)
+
+- In the YAML file, change the `host_type` to `ibm` and add the following key value pairs at the end of the YAML file as shown.
+    ```
+    cloud_cred_secret: cloud-cred-secret
+    update_etc_hosts: "1"
+    ```
+    ![](doc/source/images/yamlfilepreview.png)
+
+    > Note: `update_etc_hosts: "1"` is specific only to IBM managed OpenShift cluster.
+
+- Click on **Create** to create the Robin Cluster.
+    >Note: It will take about 5mins to create the cluster.
+
+- Once the status of the Robin cluster becomes **Ready** you have successfully installed Robin CNS on OpenShift.
+![](doc/source/images/robincluster1.png)
+
+- Click on the Robin cluster name to view more details about Robin CNS. Copy the Robin **Connect Command** and run it in your terminal.
+![](doc/source/images/robinconnectcommand.png)
+
+    ```
+    $ kubectl exec -it robin-dzlch -n robinio -- bash
+    ```
+
+- Notice that your terminal prompt will be changed to the robin pod prompt.
+    ```bash
+    [robinds@kube-c1ima1bd0o105lencd5g-robiniodzlch-default-0000029e ~]#
+    ```
+
+- In terminal, under the robin prompt, run the `robin login` command with default username as `admin` and password as `Robin123`:
+    ```
+    [robinds@kube-c1ima1bd0o105lencd5g-robiniodzlch-default-0000029e ~]# robin login admin
+    Password: 
+    User admin is logged into Administrators tenant
+    [robinds@kube-c1ima1bd0o105lencd5g-robiniodzlch-default-0000029e ~]#
+    ```
+
+- At this point, you will have successfully logged into robin client.
 
 ### Step 6: Provision Storage 
 Robin discovers disks attached to the nodes and uses them for providing storage to applications. Storage on IKS and ROKS clusters can be provisioned dynamically. You can either use IBM Cloud provided utilities or alternatively you can utilize Robin utility to provision and attach disks in IBM Cloud to use for application deployment
