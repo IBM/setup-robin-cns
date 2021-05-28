@@ -229,7 +229,7 @@ In this section you will learn to download, install, and activate Robin CNS on K
 
 - A curl and wget command will be displayed, copy and paste the command in your terminal to download the Robin CNS.
 
->Example Command: 
+    >Example Command: 
     >```
     > wget "http://get.robin.io/download/storage?id=<your-id>&type=iks" -O robin-install.tar
     >```
